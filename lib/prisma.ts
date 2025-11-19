@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = global;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
 export const prisma =
-  globalForPrisma.prisma ||
+  globalForPrisma.prisma ??
   new PrismaClient({
     log: ["query"],
   });

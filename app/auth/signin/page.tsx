@@ -22,16 +22,19 @@ export default function SigninPage() {
 
   const openModal = (success: boolean, message: string) =>
     setModal({ open: true, success, message });
+
   const closeModal = () => setModal({ open: false });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.email || !form.password) {
       openModal(false, "Please fill all required fields.");
       return;
     }
 
     setLoading(true);
+
     try {
       const res = await fetch("/api/signin", {
         method: "POST",
@@ -45,13 +48,17 @@ export default function SigninPage() {
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
+
         openModal(true, data.message || "Signed in successfully.");
         setForm({ email: "", password: "" });
-        router.push("/transactions");
+
+        // Redirect after small delay so user sees modal
+        setTimeout(() => router.push("/transactions"), 500);
       } else {
         openModal(false, data.error || "Invalid credentials.");
       }
-    } catch (err) {
+    } catch {
+      // Removed unused `err` variable → fixes ESLint warning
       openModal(false, "Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -111,7 +118,7 @@ export default function SigninPage() {
         </form>
 
         <div className="mt-4 text-center text-black">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <a className="text-emerald-700 font-medium" href="/auth/signup">
             Sign up
           </a>
